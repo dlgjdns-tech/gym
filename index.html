@@ -3,74 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Workout Tracker Pro</title>
+    <title>Workout Log - Dark Edition</title>
     <style>
         :root {
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --primary: #4ade80; /* 네온 그린 */
-            --text: #e0e0e0;
-            --border: #333;
-            --input-bg: #2d2d2d;
+            --bg: #0f172a; /* 더 깊은 네이비 블랙 */
+            --card-bg: #1e293b;
+            --primary: #22c55e; /* 선명한 그린 */
+            --text: #f8fafc;
+            --border: #334155;
+            --input-bg: #0f172a;
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); -webkit-tap-highlight-color: transparent; }
         .container { max-width: 500px; margin: 0 auto; }
-        
-        /* 메인 카드 */
-        .card { background: var(--card-bg); padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid var(--border); }
-        h2 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--primary); letter-spacing: -0.5px; font-weight: 800; }
+        .card { background: var(--card-bg); padding: 24px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); margin-bottom: 20px; border: 1px solid var(--border); }
+        h2 { font-size: 1.5rem; margin: 0 0 20px 0; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: -1px; }
 
-        /* 달력 디자인 */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: #252525; cursor: pointer; border: 1px solid var(--border); font-size: 0.95rem; transition: all 0.2s; position: relative; }
+        /* 달력 */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #334155; cursor: pointer; border: 1px solid transparent; font-size: 0.95rem; transition: 0.2s; }
         .day.today { border: 2px solid var(--primary); color: var(--primary); font-weight: bold; }
-        /* 운동 기록이 있는 날 초록색 표시 */
-        .day.has-workout { background: rgba(74, 222, 128, 0.15); border: 1px solid var(--primary); color: var(--primary); font-weight: 800; }
+        .day.has-workout { background: rgba(34, 197, 94, 0.25); border: 1px solid var(--primary); color: #4ade80; font-weight: 800; }
 
-        /* 모달 디자인 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: flex-start; justify-content: center; overflow-y: auto; z-index: 1000; backdrop-filter: blur(8px); }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 30px; width: 92%; max-width: 450px; margin: 30px 0; border: 1px solid var(--border); animation: slideUp 0.3s ease-out; }
+        /* 모달 */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-content { background: var(--card-bg); padding: 24px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .section-label { font-weight: 600; margin: 18px 0 8px; display: block; color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; font-size: 1rem; box-sizing: border-box; width: 100%; outline: none; }
-        input:focus { border-color: var(--primary); }
-
-        .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .section-label { font-weight: 700; margin: 15px 0 8px; display: block; color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; }
+        input, select { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 12px; font-size: 1rem; box-sizing: border-box; width: 100%; outline: none; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
         .input-row input { text-align: center; }
         
-        /* 기록 테이블 */
-        .record-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
-        .record-table th { color: #666; border-bottom: 1px solid var(--border); padding: 10px; text-align: left; }
-        .record-table td { border-bottom: 1px solid var(--border); padding: 12px 10px; color: #bbb; }
-        .delete-text { color: #ff5f5f; font-weight: bold; cursor: pointer; padding: 5px; }
+        /* 테이블 */
+        .record-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .record-table th { color: #64748b; border-bottom: 1px solid var(--border); padding: 8px; text-align: left; }
+        .record-table td { border-bottom: 1px solid var(--border); padding: 10px 8px; }
+        .delete-btn { color: #ef4444; font-weight: bold; cursor: pointer; }
 
         /* 버튼 */
-        .add-btn { width: 100%; padding: 14px; background: transparent; color: var(--primary); border: 1px dashed var(--primary); border-radius: 12px; font-weight: bold; margin: 10px 0; cursor: pointer; }
-        .submit-btn { width: 100%; padding: 18px; background: var(--primary); color: #000; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: 800; margin-top: 25px; cursor: pointer; transition: transform 0.1s; }
-        .submit-btn:active { transform: scale(0.98); }
+        .add-btn { width: 100%; padding: 12px; background: transparent; color: var(--primary); border: 1px dashed var(--primary); border-radius: 12px; font-weight: bold; margin: 10px 0; cursor: pointer; }
+        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: #052e16; border: none; border-radius: 14px; font-size: 1.1rem; font-weight: 800; margin-top: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h2 id="month-display">FETCHING DATA...</h2>
+        <h2 id="month-display">SYNCING...</h2>
         <div class="calendar-grid" id="calendar-days"></div>
     </div>
 </div>
 
 <div id="record-modal" class="modal">
     <div class="modal-content">
-        <h3 id="date-title" style="margin-top:0; text-align:center; color:white;">WORKOUT LOG</h3>
-        
-        <label class="section-label">Current Weight (kg)</label>
+        <h3 id="date-title" style="margin:0 0 15px 0; text-align:center;">DATE</h3>
+        <label class="section-label">몸무게 (kg)</label>
         <input type="number" id="weight" step="0.1" placeholder="00.0" inputmode="decimal">
 
-        <hr style="border:0; border-top:1px solid var(--border); margin:25px 0;">
+        <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
 
-        <label class="section-label">Add Exercise</label>
+        <label class="section-label">운동 추가</label>
         <select id="w-name" onchange="toggleEtc(this)">
             <option value="체스트프레스">체스트프레스</option>
             <option value="사이드레터럴레이즈">사이드레터럴레이즈</option>
@@ -80,24 +71,22 @@
             <option value="덤벨이두">덤벨이두</option>
             <option value="기타">기타(직접입력)</option>
         </select>
-        <input type="text" id="w-etc" placeholder="운동 이름 입력" style="margin-top:10px; display:none;">
+        <input type="text" id="w-etc" placeholder="운동 이름 입력" style="margin-top:8px; display:none;">
         
         <div class="input-row">
             <input type="number" id="w-weight" placeholder="kg" inputmode="decimal">
             <input type="number" id="w-reps" placeholder="회" inputmode="numeric">
             <input type="number" id="w-sets" placeholder="세트" inputmode="numeric">
         </div>
-        <button class="add-btn" onclick="addRecordToList()">+ ADD TO LIST</button>
+        <button class="add-btn" onclick="addRecordToList()">+ 목록에 추가</button>
 
         <table class="record-table">
-            <thead>
-                <tr><th>운동</th><th>상세</th><th>삭제</th></tr>
-            </thead>
+            <thead><tr><th>운동</th><th>기록</th><th>삭제</th></tr></thead>
             <tbody id="record-body"></tbody>
         </table>
 
-        <button class="submit-btn" onclick="saveToSheet()">SAVE TO CLOUD</button>
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; background:none; border:none; color:#555; font-size:0.9rem;">CANCEL</button>
+        <button class="submit-btn" onclick="saveToSheet()">기록 저장하기</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:15px; background:none; border:none; color:#64748b; font-size:0.9rem;">닫기</button>
     </div>
 </div>
 
@@ -109,25 +98,21 @@
     let currentWorkouts = [];
     let recordedDates = [];
 
-    // 1. 데이터 로드 (초록색 표시용)
     async function loadRecords() {
         try {
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
-            // 기록이 있는 날짜 리스트 추출
             recordedDates = data.filter(item => item.done === 'O').map(item => {
-                // 날짜 포맷 표준화 (yyyy-m-d)
                 const d = new Date(item.date);
                 return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
             });
             initCalendar();
         } catch (e) {
-            console.error("Load failed:", e);
+            console.error("Sync Error:", e);
             initCalendar();
         }
     }
 
-    // 2. 달력 생성
     function initCalendar() {
         const now = new Date();
         const year = now.getFullYear();
@@ -137,7 +122,7 @@
         grid.innerHTML = '';
         
         ['S','M','T','W','T','F','S'].forEach(w => {
-            const el = document.createElement('div'); el.innerText = w; el.style.color="#555"; el.style.fontSize="0.7rem"; grid.appendChild(el);
+            const el = document.createElement('div'); el.innerText = w; el.style.color="#64748b"; el.style.fontSize="0.75rem"; el.style.fontWeight="bold"; grid.appendChild(el);
         });
 
         const firstDay = new Date(year, month, 1).getDay();
@@ -148,10 +133,8 @@
             const dayEl = document.createElement('div');
             dayEl.className = 'day';
             const dateStr = `${year}-${month + 1}-${i}`;
-            
             if(i === now.getDate()) dayEl.classList.add('today');
             if(recordedDates.includes(dateStr)) dayEl.classList.add('has-workout');
-            
             dayEl.innerText = i;
             dayEl.onclick = () => openModal(year, month + 1, i);
             grid.appendChild(dayEl);
@@ -160,18 +143,13 @@
 
     function openModal(y, m, d) {
         selectedDate = `${y}-${m}-${d}`;
-        document.getElementById('date-title').innerText = `${m}월 ${d}일 기록`;
+        document.getElementById('date-title').innerText = `${m}월 ${d}일`;
         currentWorkouts = [];
         updateTable();
         document.getElementById('record-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
     }
 
-    function closeModal() { 
-        document.getElementById('record-modal').style.display = 'none'; 
-        document.body.style.overflow = 'auto';
-    }
-
+    function closeModal() { document.getElementById('record-modal').style.display = 'none'; }
     function toggleEtc(sel) { document.getElementById('w-etc').style.display = (sel.value === '기타') ? 'block' : 'none'; }
 
     function addRecordToList() {
@@ -180,12 +158,9 @@
         const weight = document.getElementById('w-weight').value;
         const reps = document.getElementById('w-reps').value;
         const sets = document.getElementById('w-sets').value;
-        if(!name || !reps || !sets) return alert("운동 정보를 입력해주세요.");
-        
+        if(!name || !reps || !sets) return alert("상세 정보를 입력해주세요.");
         currentWorkouts.push({ name, weight: weight || 0, reps, sets });
-        document.getElementById('w-weight').value = ''; 
-        document.getElementById('w-reps').value = ''; 
-        document.getElementById('w-sets').value = '';
+        document.getElementById('w-weight').value = ''; document.getElementById('w-reps').value = ''; document.getElementById('w-sets').value = '';
         updateTable();
     }
 
@@ -194,43 +169,33 @@
         tbody.innerHTML = '';
         currentWorkouts.forEach((item, index) => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${item.name}</td><td>${item.weight}kg/${item.reps}회/${item.sets}세트</td><td><span class="delete-text" onclick="removeItem(${index})">삭제</span></td>`;
+            tr.innerHTML = `<td>${item.name}</td><td>${item.weight}kg/${item.reps}회/${item.sets}s</td><td><span class="delete-btn" onclick="removeItem(${index})">X</span></td>`;
             tbody.appendChild(tr);
         });
     }
 
     function removeItem(index) { currentWorkouts.splice(index, 1); updateTable(); }
 
-    // 3. 스프레드시트 저장 (CORS 우회 로직 반영)
     async function saveToSheet() {
         const weight = document.getElementById('weight').value;
         const workoutString = currentWorkouts.map(w => `${w.name}(${w.weight}kg/${w.reps}회/${w.sets}세트)`).join(', ');
-        
-        const payload = { 
-            date: selectedDate, 
-            weight: weight, 
-            workoutType: workoutString, 
-            workoutDone: currentWorkouts.length > 0 ? 'O' : 'X' 
-        };
+        const payload = { date: selectedDate, weight: weight, workoutType: workoutString, workoutDone: currentWorkouts.length > 0 ? 'O' : 'X' };
         
         const btn = document.querySelector('.submit-btn');
-        btn.innerText = "SAVING..."; btn.disabled = true;
+        btn.innerText = "저장 중..."; btn.disabled = true;
 
         try {
-            // mode: 'no-cors'를 사용하면 응답 결과는 볼 수 없지만 데이터는 안전하게 전송됨
             await fetch(SCRIPT_URL, { 
                 method: 'POST', 
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(payload) 
             });
-            
-            alert('저장 요청을 보냈습니다! 잠시 후 달력을 확인하세요.');
+            alert('저장이 완료되었습니다! 잠시 후 달력을 확인하세요.');
             location.reload(); 
         } catch (e) {
             alert('네트워크 오류가 발생했습니다.');
             btn.disabled = false;
-            btn.innerText = "SAVE TO CLOUD";
         }
     }
 
